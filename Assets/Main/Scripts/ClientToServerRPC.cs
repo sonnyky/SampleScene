@@ -7,12 +7,23 @@ using StarterAssets;
 public class ClientToServerRPC : NetworkBehaviour
 {
     private Vector2 _moveInput;
-    private StarterAssetsInputs _inputs;
+    private Animator _animator;
+    private bool _hasAnimator;
+    private float _animationBlend;
+    private int _animIDSpeed;
+
+    private PlayerControls _controller;
+
+    private int state;
+
     // Start is called before the first frame update
     void Start()
     {
+        state = 0; // idle
+        _controller = GetComponent<PlayerControls>();
+        _animIDSpeed = Animator.StringToHash("Speed");
         _moveInput = new Vector2(gameObject.transform.position.x, gameObject.transform.position.y);
-        _inputs = GetComponent<StarterAssetsInputs>();
+        _hasAnimator = TryGetComponent(out _animator);
     }
 
     // Update is called once per frame
@@ -25,34 +36,45 @@ public class ClientToServerRPC : NetworkBehaviour
     {
         // 接続時に生成されたPlayerPrefabsのオブジェクトは、接続したクライアントがオーナー属性を持っています
         // IsOwner判定処理を加えないと、他プレイヤーのオブジェクトも操作してしまうことになります
-        if (IsOwner)
+        if (IsOwner && IsClient)
         {
             // クライアント側はプレイヤーのキー入力をサーバー側にも伝える
             SetMoveInputServerRPc(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
         }
-
-        if (IsServer)
-        {
-            // サーバー側は移動処理を実行
-            Move();
-        }
-        Debug.Log(_moveInput);
     }
 
-    [Unity.Netcode.ServerRpc]
-    private void SetMoveInputServerRPc(float x, float y)
+    [ServerRpc(RequireOwnership = false)]
+    private void SetMoveInputServerRPc(float x, float y, ServerRpcParams serverRpcParams = default)
     {
         _moveInput.x = x;
         _moveInput.y = y;
-        // 代入した値は、サーバー側のオブジェクトにセットされる
-        _inputs.move = _moveInput;
-    }
+        var clientId = serverRpcParams.Receive.SenderClientId;
 
-    private void Move()
-    {
-        // ServerRpcによってクライアント側から変更されている_moveInput
-        var moveVector = new Vector3(_moveInput.x, 0, _moveInput.y);
-        // 以後、RigidbodyやTransformを変更すると、サーバーに接続している全てのクライアントで反映される
-
+        if (NetworkManager.ConnectedClients.ContainsKey(clientId))
+        {
+            if (x != 0 || y != 0)
+            {
+                
+                if (!_animator.GetCurrentAnimatorStateInfo(0).IsName("Walk") && state == 0)
+                {
+                    _animator.ResetTrigger("Idle");
+                    _animator.SetTrigger("Walk");
+                    Debug.Log("Walking animation: " + clientId);
+                    state = 1;
+                }
+            }
+            else
+            {
+                if (!_animator.GetCurrentAnimatorStateInfo(0).IsName("Idle") && state == 1)
+                {
+                    _animator.ResetTrigger("Walk");
+                    _animator.SetTrigger("Idle");
+                    Debug.Log("Idle animation: " + clientId);
+                    state = 0;
+                }
+            }
+          
+            _controller.SetMoveDirection(_moveInput);
+        }
     }
  }

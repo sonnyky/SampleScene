@@ -2223,6 +2223,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RotationSmoothTime: 0.12
+  cameraRoot: {fileID: 4364348605618358924}
 --- !u!114 &8475926210948526580
 MonoBehaviour:
   m_ObjectHideFlags: 0

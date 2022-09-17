@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class PlayerControls : MonoBehaviour
+using Cinemachine;
+using Unity.Netcode;
+public class PlayerControls : NetworkBehaviour
 {
     private Vector2 _input_move;
 
@@ -22,6 +23,12 @@ public class PlayerControls : MonoBehaviour
 
     private Animator _animator;
     private bool _hasAnimator;
+
+    public Transform cameraRoot;
+
+    private GameObject playerFollowCamera;
+    private CinemachineVirtualCamera _virtualCam;
+
     private void Awake()
     {
         // get a reference to our main camera
@@ -37,6 +44,14 @@ public class PlayerControls : MonoBehaviour
         _controller = GetComponent<CharacterController>();
         _input_move = Vector2.zero;
         _hasAnimator = TryGetComponent(out _animator);
+
+        if (IsLocalPlayer)
+        {
+            playerFollowCamera = GameObject.FindGameObjectWithTag("PlayerFollowCamera");
+            _virtualCam = playerFollowCamera.GetComponent<CinemachineVirtualCamera>();
+            // simple check since I'm assuming it will never be null, but not a good check in actual production
+            _virtualCam.Follow = cameraRoot;
+        }
     }
 
     // Update is called once per frame

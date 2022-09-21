@@ -12,7 +12,7 @@ public class ClientToServerRPC : NetworkBehaviour
     private float _animationBlend;
     private int _animIDSpeed;
 
-    private PlayerControls _controller;
+    private CharInputs _controller;
 
     private int state;
 
@@ -20,7 +20,7 @@ public class ClientToServerRPC : NetworkBehaviour
     void Start()
     {
         state = 0; // idle
-        _controller = GetComponent<PlayerControls>();
+        _controller = GetComponent<CharInputs>();
         _animIDSpeed = Animator.StringToHash("Speed");
         _moveInput = new Vector2(gameObject.transform.position.x, gameObject.transform.position.y);
         _hasAnimator = TryGetComponent(out _animator);
@@ -73,8 +73,8 @@ public class ClientToServerRPC : NetworkBehaviour
                     state = 0;
                 }
             }
-          
-            _controller.SetMoveDirection(_moveInput);
+
+            _controller.move = _moveInput;
         }
     }
  }

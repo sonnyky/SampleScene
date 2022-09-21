@@ -50,21 +50,25 @@ namespace StarterAssets
 		public void MoveInput(Vector2 newMoveDirection)
 		{
 			move = newMoveDirection;
+			SetMoveInputServerRpc(move, look, jump, sprint);
 		}
 
 		public void LookInput(Vector2 newLookDirection)
 		{
 			look = newLookDirection;
+			SetMoveInputServerRpc(move, look, jump, sprint);
 		}
 
 		public void JumpInput(bool newJumpState)
 		{
 			jump = newJumpState;
+			SetMoveInputServerRpc(move, look, jump, sprint);
 		}
 
 		public void SprintInput(bool newSprintState)
 		{
 			sprint = newSprintState;
+			SetMoveInputServerRpc(move, look, jump, sprint);
 		}
 
 		private void OnApplicationFocus(bool hasFocus)
@@ -81,8 +85,13 @@ namespace StarterAssets
 		 Add functionalities to talk to server
 		 */
 		[ServerRpc(RequireOwnership = false)]
-		private void SetMoveInputServerRPc(float x, float y, ServerRpcParams serverRpcParams = default)
+		private void SetMoveInputServerRpc(Vector2 _move, Vector2 _look, bool _jump, bool _sprint, ServerRpcParams serverRpcParams = default)
 		{
+			Debug.Log("Send to server");
+			move = _move;
+			look = _look;
+			jump = _jump;
+			sprint = _sprint;
 
 		}
 	}

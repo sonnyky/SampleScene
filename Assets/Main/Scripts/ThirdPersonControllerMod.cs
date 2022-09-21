@@ -3,6 +3,7 @@ using Cinemachine;
 using Unity.Netcode;
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Users;
 #endif
 
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
@@ -116,6 +117,10 @@ namespace StarterAssets
         private GameObject playerFollowCamera;
         private CinemachineVirtualCamera _virtualCam;
 
+        // Input related
+        private InputUser _inputUser;
+        private InputDevice[] _devices;
+
         private bool IsCurrentDeviceMouse
         {
             get
@@ -136,28 +141,46 @@ namespace StarterAssets
             {
                 _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             }
+            Debug.Log("Player Awake!");
         }
 
         private void Start()
         {
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
 
-            // Capture the virtual camera to follow this character object if it is our local character
+            _hasAnimator = TryGetComponent(out _animator);
+            _controller = GetComponent<CharacterController>();
+            _input = GetComponent<CharInputs>();
+
+#if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
+            _playerInput = GetComponent<PlayerInput>();
+            _inputUser = _playerInput.user;
+            _devices = InputSystem.devices.ToArray();
+
+            if (!IsLocalPlayer)
+            {
+                _inputUser.UnpairDevices();
+                Debug.Log("Player is not local. Unpairng devices : " + _inputUser.id);
+            }
+
+#else
+			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
+#endif
+
+                // Capture the virtual camera to follow this character object if it is our local character
             if (IsLocalPlayer)
             {
                 playerFollowCamera = GameObject.FindGameObjectWithTag("PlayerFollowCamera");
                 _virtualCam = playerFollowCamera.GetComponent<CinemachineVirtualCamera>();
                 _virtualCam.Follow = CinemachineCameraTarget.transform;
-            }
 
-            _hasAnimator = TryGetComponent(out _animator);
-            _controller = GetComponent<CharacterController>();
-            _input = GetComponent<CharInputs>();
-#if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
-            _playerInput = GetComponent<PlayerInput>();
-#else
-			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
-#endif
+                if(_playerInput != null)
+                {
+                    Debug.Log("Player is local. Activating input: " + _inputUser.id);
+                    _playerInput.SwitchCurrentControlScheme("KeyboardMouse", _devices);
+                }
+
+            }
 
             AssignAnimationIDs();
 
@@ -290,6 +313,10 @@ namespace StarterAssets
             {
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
                 _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+                if (IsOwner && IsClient)
+                {
+                    SetAnimValuesServerRpc(_animIDSpeed, _animationBlend, _animIDMotionSpeed, inputMagnitude);
+                }
             }
         }
 
@@ -402,5 +429,18 @@ namespace StarterAssets
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
             }
         }
+
+        /*
+		 Add functionalities to talk to server
+		 */
+        [ServerRpc(RequireOwnership = false)]
+        private void SetAnimValuesServerRpc(int animIDSpeed, float animationBlend, int animIDMotionSpeed, float mag, ServerRpcParams serverRpcParams = default)
+        {
+            Debug.Log("Send anim values to server");
+            _animator.SetFloat(animIDSpeed, animationBlend);
+            _animator.SetFloat(animIDMotionSpeed, mag);
+
+        }
+
     }
 }

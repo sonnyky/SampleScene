@@ -2089,6 +2089,7 @@ GameObject:
   - component: {fileID: 24262982184312899}
   - component: {fileID: 5418207416325465726}
   - component: {fileID: 5845348769077202843}
+  - component: {fileID: 4818231172301417337}
   m_Layer: 8
   m_Name: PlayerArmature
   m_TagString: Player
@@ -2124,7 +2125,7 @@ Animator:
   m_GameObject: {fileID: 8243659739312911312}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 36078ab0369161e49a29d349ae3e0739, type: 3}
-  m_Controller: {fileID: 9100000, guid: 40db3173a05ae3242b1c182a09b0a183, type: 2}
+  m_Controller: {fileID: 9100000, guid: 4bee06ca6dafd234196f14e46af4b2eb, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -2318,6 +2319,18 @@ MonoBehaviour:
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
+--- !u!114 &4818231172301417337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8243659739312911312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c4af5c0a0319104cb9d52d10651440c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8316860603595647235
 GameObject:
   m_ObjectHideFlags: 0

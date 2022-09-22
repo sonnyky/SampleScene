@@ -121,6 +121,9 @@ namespace StarterAssets
         private InputUser _inputUser;
         private InputDevice[] _devices;
 
+        // Port all animation logic here to use regular nodes.
+        private CharacterStateManager _stateManager;
+
         private bool IsCurrentDeviceMouse
         {
             get
@@ -151,6 +154,7 @@ namespace StarterAssets
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<CharInputs>();
+            _stateManager = GetComponent<CharacterStateManager>();
 
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
             _playerInput = GetComponent<PlayerInput>();
@@ -223,7 +227,8 @@ namespace StarterAssets
             // update animator if using character
             if (_hasAnimator)
             {
-                _animator.SetBool(_animIDGrounded, Grounded);
+                //_animator.SetBool(_animIDGrounded, Grounded);
+                _stateManager.GroundedCheck(Grounded);
             }
         }
 
@@ -311,11 +316,15 @@ namespace StarterAssets
             // update animator if using character
             if (_hasAnimator)
             {
-                _animator.SetFloat(_animIDSpeed, _animationBlend);
-                _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+                // Change animation blend tree to regular nodes
+                // set speed thresholds between idle, walking and running animations
+                _stateManager.IdleWalkRun(_animIDSpeed, _animationBlend, _animIDMotionSpeed, inputMagnitude);
+                
+                //_animator.SetFloat(_animIDSpeed, _animationBlend);
+                //_animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
                 if (IsOwner && IsClient)
                 {
-                    SetAnimValuesServerRpc(_animIDSpeed, _animationBlend, _animIDMotionSpeed, inputMagnitude);
+                   // SetAnimValuesServerRpc(_animIDSpeed, _animationBlend, _animIDMotionSpeed, inputMagnitude);
                 }
             }
         }
@@ -330,8 +339,8 @@ namespace StarterAssets
                 // update animator if using character
                 if (_hasAnimator)
                 {
-                    _animator.SetBool(_animIDJump, false);
-                    _animator.SetBool(_animIDFreeFall, false);
+                   // _animator.SetBool(_animIDJump, false);
+                   // _animator.SetBool(_animIDFreeFall, false);
                 }
 
                 // stop our velocity dropping infinitely when grounded
@@ -349,7 +358,7 @@ namespace StarterAssets
                     // update animator if using character
                     if (_hasAnimator)
                     {
-                        _animator.SetBool(_animIDJump, true);
+                       // _animator.SetBool(_animIDJump, true);
                     }
                 }
 
@@ -374,7 +383,7 @@ namespace StarterAssets
                     // update animator if using character
                     if (_hasAnimator)
                     {
-                        _animator.SetBool(_animIDFreeFall, true);
+                       // _animator.SetBool(_animIDFreeFall, true);
                     }
                 }
 

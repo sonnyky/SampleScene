@@ -324,7 +324,7 @@ namespace StarterAssets
                 //_animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
                 if (IsOwner && IsClient)
                 {
-                   // SetAnimValuesServerRpc(_animIDSpeed, _animationBlend, _animIDMotionSpeed, inputMagnitude);
+                   SetAnimValuesServerRpc(_animIDSpeed, _animationBlend, _animIDMotionSpeed, inputMagnitude);
                 }
             }
         }
@@ -446,8 +446,7 @@ namespace StarterAssets
         private void SetAnimValuesServerRpc(int animIDSpeed, float animationBlend, int animIDMotionSpeed, float mag, ServerRpcParams serverRpcParams = default)
         {
             Debug.Log("Send anim values to server");
-            _animator.SetFloat(animIDSpeed, animationBlend);
-            _animator.SetFloat(animIDMotionSpeed, mag);
+            _stateManager.IdleWalkRun(_animIDSpeed, _animationBlend, _animIDMotionSpeed, mag);
 
         }
 

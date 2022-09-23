@@ -19,13 +19,12 @@ public class CharacterStateManager : NetworkBehaviour
     private int _animIDFreeFall;
     private int _animIDMotionSpeed;
 
-    private bool _grounded;
-
     // Start is called before the first frame update
     void Start()
     {
         _hasAnimator = TryGetComponent(out _animator);
         AssignAnimationIDs();
+        if (_hasAnimator) _animator.SetBool("Idle", true);
     }
 
     private void Update()
@@ -85,8 +84,17 @@ public class CharacterStateManager : NetworkBehaviour
 
     public void GroundedCheck(bool isGrounded)
     {
-        _grounded = isGrounded;
         _animator.SetBool("Grounded", isGrounded);
+    }
+
+    public void FreeFallCheck(bool isFreeFall)
+    {
+        _animator.SetBool("FreeFall", isFreeFall);
+    }
+
+    public void JumpingCheck(bool isJumping)
+    {
+        _animator.SetBool("Jump", isJumping);
     }
 
     // TODO : do we really need this?

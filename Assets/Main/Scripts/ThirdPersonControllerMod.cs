@@ -229,6 +229,7 @@ namespace StarterAssets
             {
                 //_animator.SetBool(_animIDGrounded, Grounded);
                 _stateManager.GroundedCheck(Grounded);
+                SetGroundedFlagServerRpc(Grounded);
             }
         }
 
@@ -339,8 +340,13 @@ namespace StarterAssets
                 // update animator if using character
                 if (_hasAnimator)
                 {
-                   // _animator.SetBool(_animIDJump, false);
-                   // _animator.SetBool(_animIDFreeFall, false);
+                    // _animator.SetBool(_animIDJump, false);
+                    // _animator.SetBool(_animIDFreeFall, false);
+                    _stateManager.JumpingCheck(false);
+                    SetJumpingFlagServerRpc(false);
+
+                    _stateManager.FreeFallCheck(false);
+                    SetFreeFallFlagServerRpc(false);
                 }
 
                 // stop our velocity dropping infinitely when grounded
@@ -358,7 +364,9 @@ namespace StarterAssets
                     // update animator if using character
                     if (_hasAnimator)
                     {
-                       // _animator.SetBool(_animIDJump, true);
+                        // _animator.SetBool(_animIDJump, true);
+                        _stateManager.JumpingCheck(true);
+                        SetJumpingFlagServerRpc(true);
                     }
                 }
 
@@ -383,7 +391,9 @@ namespace StarterAssets
                     // update animator if using character
                     if (_hasAnimator)
                     {
-                       // _animator.SetBool(_animIDFreeFall, true);
+                        // _animator.SetBool(_animIDFreeFall, true);
+                        _stateManager.FreeFallCheck(true);
+                        SetFreeFallFlagServerRpc(true);
                     }
                 }
 
@@ -440,14 +450,36 @@ namespace StarterAssets
         }
 
         /*
-		 Add functionalities to talk to server
+		 Add functionalities to talk to server for IdleWalkRun
 		 */
         [ServerRpc(RequireOwnership = false)]
         private void SetAnimValuesServerRpc(int animIDSpeed, float animationBlend, int animIDMotionSpeed, float mag, ServerRpcParams serverRpcParams = default)
         {
-            Debug.Log("Send anim values to server");
+            //Debug.Log("Send anim values to server");
             _stateManager.IdleWalkRun(_animIDSpeed, _animationBlend, _animIDMotionSpeed, mag);
 
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        private void SetGroundedFlagServerRpc(bool isGrounded, ServerRpcParams serverRpcParams = default)
+        {
+            Debug.Log("Send Grounded values to server");
+            _stateManager.GroundedCheck(isGrounded);
+
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        private void SetFreeFallFlagServerRpc(bool isFreeFall, ServerRpcParams serverRpcParams = default)
+        {
+            Debug.Log("Send FreeFall values to server");
+            _stateManager.FreeFallCheck(isFreeFall);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        private void SetJumpingFlagServerRpc(bool isJumping, ServerRpcParams serverRpcParams = default)
+        {
+            Debug.Log("Send Jumping values to server");
+            _stateManager.JumpingCheck(isJumping);
         }
 
     }

@@ -87,7 +87,7 @@ namespace StarterAssets
 		[ServerRpc(RequireOwnership = false)]
 		private void SetMoveInputServerRpc(Vector2 _move, Vector2 _look, bool _jump, bool _sprint, ServerRpcParams serverRpcParams = default)
 		{
-			Debug.Log("Send to server");
+			//Debug.Log("Send to server");
 			move = _move;
 			look = _look;
 			jump = _jump;

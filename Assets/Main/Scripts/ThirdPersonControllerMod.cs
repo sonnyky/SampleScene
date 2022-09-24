@@ -463,7 +463,7 @@ namespace StarterAssets
         [ServerRpc(RequireOwnership = false)]
         private void SetGroundedFlagServerRpc(bool isGrounded, ServerRpcParams serverRpcParams = default)
         {
-            Debug.Log("Send Grounded values to server");
+            //Debug.Log("Send Grounded values to server");
             _stateManager.GroundedCheck(isGrounded);
 
         }
@@ -471,14 +471,14 @@ namespace StarterAssets
         [ServerRpc(RequireOwnership = false)]
         private void SetFreeFallFlagServerRpc(bool isFreeFall, ServerRpcParams serverRpcParams = default)
         {
-            Debug.Log("Send FreeFall values to server");
+            //Debug.Log("Send FreeFall values to server");
             _stateManager.FreeFallCheck(isFreeFall);
         }
 
         [ServerRpc(RequireOwnership = false)]
         private void SetJumpingFlagServerRpc(bool isJumping, ServerRpcParams serverRpcParams = default)
         {
-            Debug.Log("Send Jumping values to server");
+            //Debug.Log("Send Jumping values to server");
             _stateManager.JumpingCheck(isJumping);
         }
 
